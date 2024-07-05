@@ -1,39 +1,86 @@
 // Clase
 
 class ToDo {
+  Texto;
+  Prioridade;
+  Feito = false;
 
+  constructor(texto, prioridade) {
+    this.Texto = texto;
+    this.Prioridade = prioridade;
+  }
 }
 
 // Array
-
-
+let arrayTodos = [];
 //funções projeto
 
-function CriarToDo() {
+function CriarToDo(texto, prioridade, array) {
+  let objetoTodo = new ToDo(texto, prioridade);
 
+  let verificarObjeto = array.some(
+    (obj) =>
+      obj.Texto === objetoTodo.Texto && obj.Prioridade === objetoTodo.Prioridade
+  );
+
+  if (!verificarObjeto) {
+    array.push(objetoTodo);
+  }
+
+  return objetoTodo;
 }
 
-function AtualizarToDo() {
+function AtualizarToDo(textoAntigo, textoNovo, array) {
+  let verificarTexto = array.find((obj) => obj.Texto === textoAntigo);
 
+  if (verificarTexto) {
+    verificarTexto.Texto = textoNovo;
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function ConcluirToDo() {
+function ConcluirToDo(array, texto) {
+  let verificarTexto = array.find((obj) => obj.Texto === texto);
 
+  if (verificarTexto) {
+    verificarTexto.Feito = !verificarTexto.Feito;
+
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function ExcluirToDo() {
+function ExcluirToDo(array, texto) {
+  let verificarTexto = array.find((obj) => obj.Texto === texto);
 
+  if (verificarTexto) {
+    let index = array.indexOf(verificarTexto);
+    array.splice(index, 1);
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function PesquisarToDo() {
- 
+function PesquisarToDo(array, texto) {
+  let verificarTexto = array.some((obj) => obj.Texto === texto);
+
+  if (verificarTexto) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function OrdenarCrescente() {
-  
+function OrdenarCrescente(array) {
+  return array.sort((a, b) => a.Prioridade - b.Prioridade);
 }
-function OrdenarDecrescente() {
-  
+
+function OrdenarDecrescente(array) {
+  return array.sort((a, b) => b.Prioridade - a.Prioridade);
 }
 
 // Seleção de elementos
@@ -50,11 +97,9 @@ const filterBtn = document.querySelector("#filter-select");
 
 let oldInputValue;
 
-
-
 // Funções
 const saveTodo = (text, rating, done = 0, save = 1) => {
-  let objetoTodo = CriarToDo(text, rating, arrayTodos)
+  let objetoTodo = CriarToDo(text, rating, arrayTodos);
 
   const todo = document.createElement("div");
   todo.classList.add("todo");
@@ -95,8 +140,6 @@ const saveTodo = (text, rating, done = 0, save = 1) => {
 
   todoInput.value = "";
   todoInput2.value = "";
-
-
 };
 
 const toggleForms = () => {
@@ -107,16 +150,15 @@ const toggleForms = () => {
 
 const updateTodo = (text) => {
   const todos = document.querySelectorAll(".todo");
-  let targetTodo
+  let targetTodo;
   todos.forEach((todo) => {
     let todoTitle = todo.querySelector("h3");
     if (todoTitle.innerText === oldInputValue) {
-      targetTodo = todoTitle
+      targetTodo = todoTitle;
     }
-
   });
 
-  let atualizado = AtualizarToDo(targetTodo.innerText, text,arrayTodos)
+  let atualizado = AtualizarToDo(targetTodo.innerText, text, arrayTodos);
 
   if (atualizado) {
     targetTodo.innerText = text;
@@ -128,7 +170,7 @@ const updateTodo = (text) => {
 const getSearchedTodos = (search) => {
   const todos = document.querySelectorAll(".todo");
 
-  let pesquisa = PesquisarToDo(arrayTodos, search)
+  let pesquisa = PesquisarToDo(arrayTodos, search);
 
   if (pesquisa) {
     todos.forEach((todo) => {
@@ -140,10 +182,8 @@ const getSearchedTodos = (search) => {
         todo.style.display = "none";
       }
     });
-  };
-}
-
-
+  }
+};
 
 const filterTodos = (filterValue) => {
   const todos = document.querySelectorAll(".todo");
@@ -151,20 +191,24 @@ const filterTodos = (filterValue) => {
   switch (filterValue) {
     case "cresc":
       todos.forEach((todo) => {
-        todo.remove()
-        removeTodoLocalStorage(todo.querySelector("h3").innerText)
-      })
-      arrayTodos = OrdenarCrescente(arrayTodos)
-      arrayTodos.forEach((todo) => saveTodo(todo.Texto, todo.Prioridade, done = 0, save = 1))
+        todo.remove();
+        removeTodoLocalStorage(todo.querySelector("h3").innerText);
+      });
+      arrayTodos = OrdenarCrescente(arrayTodos);
+      arrayTodos.forEach((todo) =>
+        saveTodo(todo.Texto, todo.Prioridade, (done = 0), (save = 1))
+      );
       break;
 
     case "decresc":
       todos.forEach((todo) => {
-        todo.remove()
-        removeTodoLocalStorage(todo.querySelector("h3").innerText)
-      })
-      arrayTodos = OrdenarDecrescente(arrayTodos)
-      arrayTodos.forEach((todo) => saveTodo(todo.Texto, todo.Prioridade, done = 0, save = 1))
+        todo.remove();
+        removeTodoLocalStorage(todo.querySelector("h3").innerText);
+      });
+      arrayTodos = OrdenarDecrescente(arrayTodos);
+      arrayTodos.forEach((todo) =>
+        saveTodo(todo.Texto, todo.Prioridade, (done = 0), (save = 1))
+      );
       break;
 
     default:
@@ -194,8 +238,8 @@ document.addEventListener("click", (e) => {
   }
 
   if (targetEl.classList.contains("finish-todo")) {
-    todoTitle = parentEl.querySelector("h3").innerText
-    let concluido = ConcluirToDo(arrayTodos, todoTitle)
+    todoTitle = parentEl.querySelector("h3").innerText;
+    let concluido = ConcluirToDo(arrayTodos, todoTitle);
     if (concluido) {
       parentEl.classList.toggle("done");
       updateTodoStatusLocalStorage(todoTitle);
@@ -203,15 +247,14 @@ document.addEventListener("click", (e) => {
   }
 
   if (targetEl.classList.contains("remove-todo")) {
-    todoTitle = parentEl.querySelector("h3").innerText
-    let removido = ExcluirToDo(arrayTodos, todoTitle)
+    todoTitle = parentEl.querySelector("h3").innerText;
+    let removido = ExcluirToDo(arrayTodos, todoTitle);
     if (removido) {
       parentEl.remove();
 
       // Utilizando dados da localStorage
       removeTodoLocalStorage(todoTitle);
     }
-
   }
 
   if (targetEl.classList.contains("edit-todo")) {
